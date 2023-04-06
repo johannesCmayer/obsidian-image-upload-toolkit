@@ -63,20 +63,25 @@ export default class ImageTagProcessor {
             for (let x of fmc) {
                 x.link = x.link.split('#')[0];
                 let f = app.metadataCache.getFirstLinkpathDest(x.link, x.link);
-                console.log(f)
                 if (f == null) {
-                    new Notice(`Can NOT locate file for link ${x.link}! Deleting link in export.`, 10000);
+                    let msg = `${x.link} can't be located! Deleting link in export.`;
+                    new Notice(msg, 10000);
+                    console.log(msg)
                     value = value.replaceAll(x.original, x.displayText);
                     continue;
                 }
                 let fm = app.metadataCache.getFileCache(f)?.frontmatter;
                 if (fm == undefined) {
-                    new Notice(`${f.name} has no frontmatter! Deleting link in export.`, 10000);
+                    let msg = `${f.name} has no frontmatter! Deleting link in export.`;
+                    new Notice(msg, 10000);
+                    console.log(msg)
                     value = value.replaceAll(x.original, x.displayText);
                     continue;
                 }
                 if (fm['url'] == undefined) {
-                    new Notice(`${f.name} frontmatter has no link field in! Deleting link in export.`, 10000);
+                    let msg = `${f.name} frontmatter has no link field in! Deleting link in export.`
+                    new Notice(msg, 10000);
+                    console.log(msg)
                     value = value.replaceAll(x.original, x.displayText);
                     continue;
                 }

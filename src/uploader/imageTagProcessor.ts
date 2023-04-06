@@ -56,6 +56,33 @@ export default class ImageTagProcessor {
                 console.log(`replacing ${image.source} with ![${altText}](${image.url})`);
                 value = value.replaceAll(image.source, `![${altText}](${image.url})`);
             }
+
+            // Replace wiki links with markdown links from frontmatter of the linked files
+            const file = app.workspace.getActiveFile();
+            let fmc = app.metadataCache.getFileCache(file)?.links;
+            for (let x of fmc) {
+                let f = app.metadataCache.getFirstLinkpathDest(x.link, x.link);
+                let del_link = false;
+                if (f == null) {
+                    new Notice(`Can NOT locate file for link ${x.link}! Deleting link in export.`, 10000);
+                    del_link = true;
+                }
+                let fm = app.metadataCache.getFileCache(f)?.frontmatter;
+                if (fm == undefined) {
+                    new Notice(`${f.name} has no frontmatter! Deleting link in export.`, 10000);
+                    del_link = true;
+                }
+                if (fm['link'] == undefined) {
+                    new Notice(`${f.name} frontmatter has no link field in! Deleting link in export.`, 10000);
+                    del_link = true;
+                }
+                if (del_link) {
+                    value = value.replaceAll(x.original, x.displayText);
+                    continue;
+                }
+                value = value.replaceAll(x.original, `[${x.displayText}](${fm['link']})`);
+            }
+
             if (this.settings.replaceOriginalDoc) {
                 this.getEditor()?.setValue(value);
             }

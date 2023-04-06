@@ -61,22 +61,22 @@ export default class ImageTagProcessor {
             const file = app.workspace.getActiveFile();
             let fmc = app.metadataCache.getFileCache(file)?.links;
             for (let x of fmc) {
+                x.link = x.link.split('#')[0];
                 let f = app.metadataCache.getFirstLinkpathDest(x.link, x.link);
-                let del_link = false;
+                console.log(f)
                 if (f == null) {
                     new Notice(`Can NOT locate file for link ${x.link}! Deleting link in export.`, 10000);
-                    del_link = true;
+                    value = value.replaceAll(x.original, x.displayText);
+                    continue;
                 }
                 let fm = app.metadataCache.getFileCache(f)?.frontmatter;
                 if (fm == undefined) {
                     new Notice(`${f.name} has no frontmatter! Deleting link in export.`, 10000);
-                    del_link = true;
+                    value = value.replaceAll(x.original, x.displayText);
+                    continue;
                 }
                 if (fm['link'] == undefined) {
                     new Notice(`${f.name} frontmatter has no link field in! Deleting link in export.`, 10000);
-                    del_link = true;
-                }
-                if (del_link) {
                     value = value.replaceAll(x.original, x.displayText);
                     continue;
                 }

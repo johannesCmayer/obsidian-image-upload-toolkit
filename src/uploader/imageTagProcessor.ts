@@ -75,12 +75,12 @@ export default class ImageTagProcessor {
                     value = value.replaceAll(x.original, x.displayText);
                     continue;
                 }
-                if (fm['link'] == undefined) {
+                if (fm['url'] == undefined) {
                     new Notice(`${f.name} frontmatter has no link field in! Deleting link in export.`, 10000);
                     value = value.replaceAll(x.original, x.displayText);
                     continue;
                 }
-                value = value.replaceAll(x.original, `[${x.displayText}](${fm['link']})`);
+                value = value.replaceAll(x.original, `[${x.displayText}](${fm['url']})`);
             }
 
             if (this.settings.replaceOriginalDoc) {
